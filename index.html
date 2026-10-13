@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Метроном ДПДГ</title>
+<style>
+:root{color-scheme:dark;--bg:#101815;--panel:#18231e;--text:#eef3ec;--muted:#a4b4a8;--accent:#c2ed9c;--line:#324137}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1360px;margin:auto;padding:32px 40px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}.brand{font-size:23px;font-weight:650;letter-spacing:-.6px}.brand span{color:var(--accent);margin-right:10px}.tag{color:var(--muted);font-size:13px}h1{font-size:clamp(26px,4vw,40px);font-weight:500;letter-spacing:-1.2px;margin:0 0 8px}.intro{color:var(--muted);margin:0 0 26px}.stage{position:relative;height:clamp(230px,38vh,440px);border:1px solid var(--line);border-radius:24px;background:#141e19;overflow:hidden}.track{position:absolute;left:6%;right:6%;top:50%;height:1px;background:#2c3a30}.edge{position:absolute;top:calc(50% - 3px);height:7px;width:7px;background:#53624f;border-radius:50%}.edge.left{left:6%}.edge.right{right:6%}.dot{position:absolute;left:50%;top:50%;width:30px;height:30px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 26px #c2ed9c20;will-change:left}.stage-top{position:absolute;inset:20px 24px auto;display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:13px}.stage-bottom{position:absolute;bottom:18px;left:24px;color:var(--muted);font-size:12px}.progress{height:3px;position:absolute;bottom:0;left:0;width:0;background:var(--accent)}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0}.clock{font-size:35px;line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-1px}.clock-label{color:var(--muted);font-size:12px;margin-top:5px}.actions{display:flex;gap:10px;flex-wrap:wrap}button{font:inherit;border:1px solid var(--line);border-radius:12px;padding:12px 20px;background:#202d24;color:var(--text);cursor:pointer;min-height:48px}button:hover{filter:brightness(1.13)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:4px}button.primary{background:var(--accent);color:#192413;border-color:var(--accent);min-width:155px;font-weight:650}button:disabled{opacity:.4;cursor:default}.settings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}.card{border:1px solid var(--line);border-radius:18px;padding:22px;background:var(--panel)}label,.card-title{display:block;font-size:14px;margin-bottom:12px}input[type=number],select{width:100%;padding:10px 12px;border:1px solid #435246;border-radius:9px;background:#101a14;color:var(--text);font:inherit}input[type=range]{width:100%;accent-color:var(--accent);margin:13px 0 5px}input:disabled,select:disabled{opacity:.5}.hint{font-size:12px;color:var(--muted);margin:10px 0 0}.row{display:flex;gap:12px;align-items:center}.row label{margin:0}.unit{color:var(--muted);white-space:nowrap;font-size:14px}.options{display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding-top:18px}.options label{margin:0;font-size:13px;color:var(--muted)}input[type=checkbox]{accent-color:var(--accent)}footer{color:var(--muted);font-size:12px;margin-top:25px;max-width:850px}.error{color:#ffd4b6;min-height:24px;font-size:13px;margin-top:8px}.focus-mode main{max-width:none}.focus-mode header,.focus-mode h1,.focus-mode .intro,.focus-mode .settings,.focus-mode .series,.focus-mode .options,.focus-mode footer{display:none}.focus-mode .stage{height:calc(100dvh - 200px);min-height:180px}.focus-mode main{padding:24px}html:fullscreen{background:var(--bg)}@media(max-width:700px){main{padding:22px 18px}.settings{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions button{padding:10px 14px}.tag{font-size:11px}.stage-top{inset:16px 16px auto}.stage-bottom{left:16px}.focus-mode .toolbar{flex-direction:row;flex-wrap:wrap}.focus-mode .actions{width:auto}.focus-mode .stage{height:calc(100dvh - 230px)}}
+
+[hidden]{display:none!important}.rest{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:#141e19}.rest-ring{position:relative;width:156px;height:156px}.rest svg{width:100%;height:100%;transform:rotate(-90deg)}.rest circle{fill:none;stroke-width:5}.rest .base{stroke:var(--line)}.rest .remaining{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:0}.rest-number{position:absolute;inset:0;display:grid;place-content:center;font-size:38px;font-variant-numeric:tabular-nums}.rest-caption{color:var(--muted);font-size:13px;margin-top:10px}.stage-top,.stage-bottom{z-index:2}.series{display:flex;gap:16px;margin-top:16px}.series .card{flex:1}.series input{max-width:180px}@media(max-width:700px){.series{flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="brand"><span>↔</span>Метроном ДПДГ</div><div class="tag">ВИЗУАЛЬНЫЙ МЕТРОНОМ</div></header>
+<h1>Движение в вашем ритме</h1>
+<p class="intro">Настройте темп и время. Следите взглядом за точкой.</p>
+<section class="stage" aria-label="Поле движения точки">
+<div class="stage-top"><span id="status" role="status" aria-live="polite">Готово к запуску</span><span id="tempoLabel">60 переходов / мин</span></div>
+<div class="track"></div><div class="edge left"></div><div class="edge right"></div><div class="dot" id="dot" aria-hidden="true"></div>
+<div class="rest" id="rest" hidden><div class="rest-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="base" cx="60" cy="60" r="52"/><circle class="remaining" id="restRing" cx="60" cy="60" r="52" pathLength="100"/></svg><div class="rest-number" id="restNumber" role="timer">10</div></div><div class="rest-caption" id="restCaption">До следующего запуска</div></div>
+<div class="stage-bottom">ВЛЕВО ↔ ВПРАВО</div><div id="progress" class="progress"></div>
+</section>
+<div class="toolbar">
+<div><div class="clock" id="timer" role="timer" aria-label="Осталось времени">01:00</div><div class="clock-label" id="clockLabel">осталось в запуске</div></div>
+<div class="actions"><button class="primary" id="start">Начать</button><button id="pause" disabled>Пауза</button><button id="reset" disabled>Сбросить</button><button id="fullscreen" aria-pressed="false">На весь экран</button></div>
+</div>
+<div class="settings">
+<section class="card"><label for="tempo">01 / Темп</label><div class="row"><input id="tempo" type="number" min="10" max="240" step="1" value="60"><span class="unit">перех. / мин</span></div><input id="tempoRange" aria-label="Ползунок темпа" type="range" min="10" max="240" step="1" value="60"><p class="hint">Один переход — от одного края до другого.<br>Туда и обратно — два перехода.</p></section>
+<section class="card"><label for="duration">02 / Время одного запуска</label><div class="row"><input id="duration" type="number" min="1" max="3600" step="1" value="60"><span class="unit">секунд</span></div><p class="hint">От 1 секунды до 60 минут — время каждого запуска.<br>Параметры можно менять прямо во время движения.</p></section>
+<section class="card"><label for="width">03 / Размах движения · <span id="widthLabel">85%</span></label><input id="width" type="range" min="20" max="95" step="1" value="85"><label for="size" style="margin-top:12px">Размер точки</label><select id="size"><option value="20">Маленькая</option><option value="30" selected>Средняя</option><option value="44">Большая</option></select></section>
+</div>
+<div class="series">
+<section class="card"><label for="repeats">04 / Количество запусков</label><div class="row"><input id="repeats" type="number" min="1" max="100" step="1" value="1"><span class="unit">раз</span></div><p class="hint">От 1 до 100. Следующие запуски начинаются автоматически.</p></section>
+<section class="card"><label for="restDuration">05 / Перерыв между запусками</label><div class="row"><input id="restDuration" type="number" min="0" max="3600" step="1" value="10"><span class="unit">секунд</span></div><p class="hint">0 — без перерыва. Кнопка «Пауза» останавливает любой отсчёт.</p></section>
+</div>
+<div class="options"><label><input id="sound" type="checkbox"> Тихий щелчок на каждом краю</label><span class="hint" style="margin:0">Пробел — запуск / пауза · Esc — пауза и выход из полного экрана</span></div>
+<div id="error" class="error" role="alert"></div>
+<footer>Вспомогательный визуальный инструмент для ДПДГ, не самостоятельная терапия. Работает без интернета. Настройки сохраняются в этом браузере.</footer>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const fields=['tempo','duration','width','size','repeats','restDuration'];
+let state='idle',elapsed=0,started=0,frame=0,lastEdge=0,phaseOffset=0,config=null,audio=null,phase='work',round=1;
+const limits={tempo:[10,240],duration:[1,3600],width:[20,95],repeats:[1,100],restDuration:[0,3600]};
+function valid(id,v){return Number.isFinite(v)&&Number.isInteger(v)&&(id==='size'?[20,30,44].includes(v):v>=limits[id][0]&&v<=limits[id][1]);}
+function inputError(id){return id==='size'?'Выберите размер точки.':'Введите целое число от '+limits[id][0]+' до '+limits[id][1]+'.';}
+try{const saved=JSON.parse(localStorage.getItem('ritm-settings')||'null');if(saved)for(const id of fields){if(valid(id,Number(saved[id])))$(id).value=saved[id];}}catch{}
+function save(){try{localStorage.setItem('ritm-settings',JSON.stringify(Object.fromEntries(fields.map(id=>[id,Number($(id).value)]))));}catch{}}
+function time(ms){const seconds=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');}
+function preview(){ $('tempoRange').value=$('tempo').value;$('tempoLabel').textContent=$('tempo').value+' переходов / мин';$('widthLabel').textContent=$('width').value+'%';$('dot').style.width=$('size').value+'px';$('dot').style.height=$('size').value+'px';if(state==='idle')$('timer').textContent=time((Number($('duration').value)||0)*1000);}
+function phaseDuration(){return (phase==='work'?config.duration:config.restDuration)*1000;}
+function currentMs(){return Math.min(phaseDuration(),elapsed+(state==='running'?performance.now()-started:0));}
+function paint(ms){
+ const remaining=Math.max(0,phaseDuration()-ms);
+ $('rest').hidden=phase!=='rest';$('dot').hidden=phase==='rest';
+ $('clockLabel').textContent=phase==='rest'?'до следующего запуска':'осталось в запуске';
+ $('timer').textContent=time(remaining);
+ $('progress').style.width=(phaseDuration()?Math.min(100,ms/phaseDuration()*100):100)+'%';
+ if(phase==='rest'){$('restNumber').textContent=String(Math.ceil(remaining/1000));$('restRing').style.strokeDashoffset=String(phaseDuration()?Math.min(100,ms/phaseDuration()*100):100);$('restCaption').textContent='До запуска '+(round+1)+' из '+config.repeats;return 0;}
+ const position=phaseOffset+ms*config.tempo/60000;
+ $('dot').style.left=(50-Math.cos(position*Math.PI)*config.width/2)+'%';return Math.floor(position);
+}
+function status(message){
+ $('status').textContent=message||(state==='done'?'Завершено · '+round+' из '+config.repeats:state==='paused'?'Пауза · '+(phase==='rest'?'перерыв':'запуск '+round):(phase==='rest'?'Перерыв · после запуска '+round:'Запуск '+round+' из '+config.repeats+' · следите за точкой'));
+ $('start').textContent=state==='done'?'Ещё раз':'Начать';$('start').disabled=state==='running'||state==='paused';
+ $('pause').disabled=state!=='running'&&state!=='paused';$('pause').textContent=state==='paused'?'Продолжить':'Пауза';
+}
+function finish(){state='done';cancelAnimationFrame(frame);$('rest').hidden=true;$('dot').hidden=false;$('timer').textContent='00:00';$('progress').style.width='100%';status();}
+function advance(now){
+ if(round>=config.repeats){finish();return;}
+ if(phase==='work'&&config.restDuration>0)phase='rest';else{phase='work';round++;}
+ elapsed=0;started=now;phaseOffset=0;lastEdge=0;status();paint(0);
+}
+function clickSound(){if(!$('sound').checked||!audio||audio.state!=='running')return;const o=audio.createOscillator(),g=audio.createGain();o.frequency.value=520;g.gain.setValueAtTime(0.045,audio.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audio.currentTime+.035);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+.04);}
+function enableAudio(){if(!$('sound').checked)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();audio.resume().catch(()=>{$('error').textContent='Звук недоступен. Движение работает без звука.';});}catch{$('error').textContent='Звук недоступен. Движение работает без звука.';}}
+function tick(now){
+ if(state!=='running')return;
+ const ms=Math.min(phaseDuration(),elapsed+now-started),edge=paint(ms);
+ if(phase==='work'&&edge>lastEdge){clickSound();lastEdge=edge;}
+ if(ms>=phaseDuration())advance(now);
+ if(state==='running')frame=requestAnimationFrame(tick);
+}
+function pause(message){if(state!=='running')return;elapsed=currentMs();cancelAnimationFrame(frame);paint(elapsed);state='paused';status(message);}
+function start(){
+ if(state==='running'){pause();return;}
+ if(state!=='paused'){
+  const next=Object.fromEntries(fields.map(id=>[id,Number($(id).value)]));
+  for(const id of fields)if($(id).value===''||!valid(id,next[id])){$('error').textContent=inputError(id);$(id).focus();return;}
+  config=next;elapsed=0;lastEdge=0;phaseOffset=0;phase='work';round=1;save();
+ }
+ $('error').textContent='';enableAudio();state='running';$('reset').disabled=false;started=performance.now();status();paint(elapsed);frame=requestAnimationFrame(tick);
+}
+function reset(){cancelAnimationFrame(frame);state='idle';phase='work';round=1;elapsed=0;$('dot').hidden=false;$('rest').hidden=true;$('dot').style.left='50%';$('progress').style.width='0%';$('clockLabel').textContent='осталось в запуске';$('status').textContent='Готово к запуску';$('start').textContent='Начать';$('start').disabled=false;$('pause').disabled=true;$('pause').textContent='Пауза';$('reset').disabled=true;$('error').textContent='';preview();}
+function setFocus(on){document.body.classList.toggle('focus-mode',on);$('fullscreen').textContent=on?'Параметры':'На весь экран';$('fullscreen').setAttribute('aria-pressed',String(on));}
+$('start').addEventListener('click',start);$('reset').addEventListener('click',reset);
+function edit(id){
+ const value=Number($(id).value);
+ if($(id).value===''||!valid(id,value)){$('error').textContent=inputError(id);return;}
+ $('error').textContent='';
+ if(state==='done')reset();
+ if(state==='running'||state==='paused'){
+   const ms=currentMs();
+   if(id==='tempо'&&phase==='work')phaseOffset+=ms*(config.tempo-value)/60000;
+   config[id]=value;
+   lastEdge=paint(Math.min(ms,phaseDuration()));
+   if(phase==='rest'&&round>=config.repeats)finish();
+   else if(ms>=phaseDuration())advance(performance.now());
+   else status();
+ }
+ preview();save();
+}
+$('pause').addEventListener('click',()=>{if(state==='running')pause();else if(state==='paused')start();});
+for(const id of fields)$(id).addEventListener('input',()=>edit(id));
+$('tempoRange').addEventListener('input',()=>{$('tempo').value=$('tempoRange').value;edit('tempo');});
+$('sound').addEventListener('change',enableAudio);
+$('fullscreen').addEventListener('click',async()=>{const on=!document.body.classList.contains('focus-mode');setFocus(on);try{if(on)await document.documentElement.requestFullscreen();else if(document.fullscreenElement)await document.exitFullscreen();}catch{/* The expanded layout remains available when fullscreen is unsupported. */}});
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)setFocus(false);});
+document.addEventListener('keydown',e=>{if(e.code==='Escape'){pause();setFocus(false);}if(e.code==='Space'&&!['INPUT','SELECT','BUTTON','TEXTAREA'].includes(e.target.tagName)){e.preventDefault();if(!e.repeat)start();}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause('Пауза — вкладка была скрыта');});
+preview();
+</script>
+</body>
+</html>
