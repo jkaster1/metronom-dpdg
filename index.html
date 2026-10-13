@@ -102,7 +102,7 @@ function edit(id){
  if(state==='done')reset();
  if(state==='running'||state==='paused'){
    const ms=currentMs();
-   if(id==='tempо'&&phase==='work')phaseOffset+=ms*(config.tempo-value)/60000;
+   if(id==='tempo'&&phase==='work')phaseOffset+=ms*(config.tempo-value)/60000;
    config[id]=value;
    lastEdge=paint(Math.min(ms,phaseDuration()));
    if(phase==='rest'&&round>=config.repeats)finish();
